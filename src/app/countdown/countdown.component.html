@@ -1,0 +1,28 @@
+<h1>Advanced Pomodoro</h1>
+
+<h2>{{countdownService.title}}</h2>
+<h2>{{countdownService.seconds | hms}}</h2>
+<button (click)="countdownService.switchPause()">{{countdownService.paused ? 'Start' : 'Pause'}}</button>
+<button (click)="switchCountdown()">Finish</button>
+
+<label>Work/Rest delimiter</label>
+<input [value]="delimeter"/>
+
+<p>Total Work Time: {{workTimeStats.totalSeconds | hms}}</p>
+
+<!--<table>-->
+<!--  <tr>-->
+<!--    <th>Start</th>-->
+<!--    <th>Finish</th>-->
+<!--    <th>Duration</th>-->
+<!--  </tr>-->
+<!--  <tr>-->
+<!--    <td>13:00</td>-->
+<!--    <td>13:20</td>-->
+<!--    <td>20m</td>-->
+<!--    <td>-->
+<!--      <button>X</button>-->
+<!--      <button>X and older</button>-->
+<!--    </td>-->
+<!--  </tr>-->
+<!--</table>-->

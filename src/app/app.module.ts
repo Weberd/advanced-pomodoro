@@ -3,10 +3,14 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { CountdownComponent } from './countdown/countdown.component';
+import { HmsPipe } from './pipes/hms.pipe';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    CountdownComponent,
+    HmsPipe
   ],
   imports: [
     BrowserModule,
