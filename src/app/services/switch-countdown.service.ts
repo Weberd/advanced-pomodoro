@@ -17,18 +17,27 @@ export class CountdownFactory {
     let newCountdown = new WorkCountdownService()
 
     if (countdown instanceof WorkCountdownService) {
-      const start = new Date()
-      const end = new Date()
-      start.setTime(start.valueOf() - countdown.seconds * 1000)
-
-      this.worktimeStats.unshift(new WorkTimeModel(start, end))
-      newCountdown = new RestCountdownService()
-      newCountdown.seconds = Math.floor(countdown.seconds / delimiter)
-      newCountdown.unpause()
+      this.addWorktime(countdown)
+      newCountdown = this.createRestCountdown(newCountdown, countdown, delimiter);
     } else {
       this.soundService.playGet2Work()
     }
 
     return newCountdown;
+  }
+
+  private createRestCountdown(newCountdown: WorkCountdownService, countdown: WorkCountdownService, delimiter: number) {
+    newCountdown = new RestCountdownService()
+    newCountdown.seconds = Math.floor(countdown.seconds / delimiter)
+    newCountdown.unpause()
+    return newCountdown;
+  }
+
+  private addWorktime(countdown: WorkCountdownService) {
+    const start = new Date()
+    const end = new Date()
+    start.setTime(start.valueOf() - countdown.seconds * 1000)
+
+    this.worktimeStats.unshift(new WorkTimeModel(start, end))
   }
 }
