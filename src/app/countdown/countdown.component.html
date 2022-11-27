@@ -3,7 +3,7 @@
 <h2>{{countdownService.title}}</h2>
 <h2>{{countdownService.seconds | hms}}</h2>
 <button (click)="countdownService.switchPause()">{{countdownService.paused ? 'Start' : 'Pause'}}</button>
-<button (click)="switchCountdown()">Finish</button>
+<button (click)="switchCountdown(false)">Finish</button>
 
 <label>Work/Rest delimiter</label>
 <input [(ngModel)]="delimiter" min="1" type="number"/>
@@ -21,8 +21,8 @@
   </thead>
   <tbody>
     <tr *ngFor="let worktime of workTimeStats.worktimes; let i = index">
-      <td>{{ worktime.start | date:'hh:mm:ss' }}</td>
-      <td>{{worktime.end | date:'hh:mm:ss'}}</td>
+      <td>{{ localeDateTime(worktime.start) }}</td>
+      <td>{{ localeDateTime(worktime.end) }}</td>
       <td>{{worktime.seconds | hms}}</td>
       <td>
         <button (click)="workTimeStats.remove(i)">X</button>
