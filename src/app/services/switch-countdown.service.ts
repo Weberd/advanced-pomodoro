@@ -13,21 +13,27 @@ export class CountdownFactory {
     private worktimeStats: WorkTimeStatService
   ) {}
 
-  switch(countdown: CountdownServiceInterface, delimiter: number): CountdownServiceInterface {
-    let newCountdown = new WorkCountdownService()
-
-    if (countdown instanceof WorkCountdownService) {
-      this.addWorktime(countdown)
-      newCountdown = this.createRestCountdown(newCountdown, countdown, delimiter);
-    } else {
+  public createWorkCountdown(playSound: boolean): CountdownServiceInterface {
+    if (playSound)
       this.soundService.playGet2Work()
-    }
 
-    return newCountdown;
+    return new WorkCountdownService()
   }
 
-  private createRestCountdown(newCountdown: WorkCountdownService, countdown: WorkCountdownService, delimiter: number) {
-    newCountdown = new RestCountdownService()
+  switch(countdown: CountdownServiceInterface, delimiter: number, playSound: boolean): CountdownServiceInterface {
+    if (countdown instanceof WorkCountdownService) {
+      this.addWorktime(countdown)
+      return this.createRestCountdown(countdown, delimiter)
+    } else {
+      if (playSound)
+        this.soundService.playGet2Work()
+
+      return  new WorkCountdownService()
+    }
+  }
+
+  public createRestCountdown(countdown: WorkCountdownService, delimiter: number) {
+    const newCountdown = new RestCountdownService()
     newCountdown.seconds = Math.floor(countdown.seconds / delimiter)
     newCountdown.unpause()
     return newCountdown;
