@@ -6,7 +6,7 @@
 <button (click)="switchCountdown()">Finish</button>
 
 <label>Work/Rest delimiter</label>
-<input [value]="delimeter"/>
+<input [(ngModel)]="delimiter" min="1" type="number"/>
 
 <p>Total Work Time: {{workTimeStats.totalSeconds | hms}}</p>
 
