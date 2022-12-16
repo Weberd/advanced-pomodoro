@@ -1,3 +1,5 @@
+export const COUNTDOWN_LOCAL_STORAGE_KEY = 'advanced-pomodoro-countdown'
+
 export interface CountdownServiceInterface {
   title: string;
   seconds: number;
@@ -7,4 +9,6 @@ export interface CountdownServiceInterface {
   pause(): void;
   unpause(): void;
   switchPause(): void;
+  persist(): void;
+  restore(): void;
 }
