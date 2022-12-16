@@ -3,7 +3,6 @@ export class WorkTimeModel {
   }
 
   get seconds(): number {
-    // @ts-ignore
-    return (this.end - this.start) / 1000;
+    return (this.end.getTime() - this.start.getTime()) / 1000;
   }
 }

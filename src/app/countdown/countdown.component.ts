@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {fromEvent, Subject, takeUntil, timer} from "rxjs";
 import {CountdownServiceInterface} from "../services/countdown.service.Interface";
 import {WorkCountdownService} from "../services/work-countdown.service";
-import {CountdownFactory} from "../services/switch-countdown.service";
+import {CountdownFactory} from "../services/switch-countdown.factory";
 import {SoundService} from "../services/sound.service";
 import { Title } from '@angular/platform-browser';
 import {HmsPipe} from "../pipes/hms.pipe";
@@ -17,24 +17,26 @@ import {WorkTimeStatService} from "../services/work-time-stat.service";
 export class CountdownComponent implements OnInit {
 
   constructor(
-    private countdownFactory: CountdownFactory,
+    public countdownFactory: CountdownFactory,
     private titleService: Title,
     private hmsPipe: HmsPipe,
     public workTimeStats: WorkTimeStatService
   ) { }
 
   public countdownService: CountdownServiceInterface = new WorkCountdownService();
-  public delimiter = 4;
   private _unsubscribeAll: Subject<any> = new Subject();
 
   ngOnInit(): void {
+    this.countdownService.restore()
+    this.countdownFactory.restore()
+
     timer(0, 1000)
     .pipe(takeUntil(this._unsubscribeAll))
     .subscribe(() => {
       this.countdownService.progress();
 
       if (this.countdownService.finished())
-        this.switchCountdown(true)
+        this.switchCountdownFactory(true)
 
       this.titleService.setTitle(`${this.countdownService.title} ${this.hmsPipe.transform(this.countdownService.seconds)}`)
     });
@@ -51,7 +53,7 @@ export class CountdownComponent implements OnInit {
         }
 
         if (key === 'KeyF') {
-          this.switchCountdown(false)
+          this.switchCountdownFactory(false)
         }
       })
   }
@@ -66,11 +68,18 @@ export class CountdownComponent implements OnInit {
     this._unsubscribeAll.complete();
   }
 
-  switchCountdown(playSound: boolean) {
+  switchCountdownFactory(playSound: boolean) {
     this.countdownService = this.countdownFactory.switch(
       this.countdownService,
-      this.delimiter,
       playSound
     )
+  }
+
+  getBackgroundColor(): string {
+    if (this.countdownService instanceof WorkCountdownService) {
+      return 'bg-rose-200';
+    } else {
+      return 'bg-green-200';
+    }
   }
 }

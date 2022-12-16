@@ -1,33 +1,65 @@
-<h1>Advanced Pomodoro</h1>
+<div class="h-screen" [ngClass]="getBackgroundColor()">
+  <header class="bg-white drop-shadow-lg px-2 py-2 md:py-4 text-purple-700">
+    <span >Advanced Pomodoro</span>
+  </header>
 
-<h2>{{countdownService.title}}</h2>
-<h2>{{countdownService.seconds | hms}}</h2>
-<button (click)="countdownService.switchPause()">{{countdownService.paused ? 'Start' : 'Pause'}}</button>
-<button (click)="switchCountdown(false)">Finish</button>
+  <div class="py-6 md:py-12">
+    <div class="container px-4 mx-auto">
+      <div class="shadow-lg bg-white text-center rounded px-4 py-4 max-w-2xl mx-auto">
 
-<label>Work/Rest delimiter</label>
-<input [(ngModel)]="delimiter" min="1" type="number"/>
+        <div>
+          <h1 class="text-6xl">{{countdownService.seconds | hms}}</h1>
+        </div>
 
-<p>Total Work Time: {{workTimeStats.totalSeconds | hms}}</p>
+        <div class="py-2">
+          <button class="px-4 py-2 mr-2 rounded text-white bg-red-500 hover:bg-red-700" (click)="countdownService.switchPause()">{{countdownService.paused ? 'Start' : 'Pause'}}</button>
+          <button  class="px-4 py-2 rounded text-white bg-green-500 hover:bg-green-700" (click)="switchCountdownFactory(false)">Finish</button>
+        </div>
 
-<table>
-  <thead>
-    <tr>
-      <th>Start</th>
-      <th>Finish</th>
-      <th>Duration</th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let worktime of workTimeStats.worktimes; let i = index">
-      <td>{{ localeDateTime(worktime.start) }}</td>
-      <td>{{ localeDateTime(worktime.end) }}</td>
-      <td>{{worktime.seconds | hms}}</td>
-      <td>
-        <button (click)="workTimeStats.remove(i)">X</button>
-        <button (click)="workTimeStats.removeOlder(i)">X and older</button>
-      </td>
-    </tr>
-  </tbody>
-</table>
+        <div class="py-2 flex justify-center">
+          <label class="mt-3 mr-3">Work/Rest delimiter</label>
+          <input class="mt-1 block px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm"
+                 (change)="countdownFactory.persist()"
+                 [(ngModel)]="countdownFactory.delimiter" min="1" type="number"/>
+        </div>
+
+        <div class="py-2">
+          <p>Total Work Time: {{workTimeStats.totalSeconds | hms}}</p>
+        </div>
+
+        <div class="overflow-y-clip">
+          <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+            <thead class="text-xs text-gray-700 bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+            <tr>
+              <th scope="col" class="py-3 px-6">Start</th>
+              <th scope="col" class="py-3 px-6">Finish</th>
+              <th scope="col" class="py-3 px-6">Duration</th>
+              <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="border-b" *ngFor="let worktime of workTimeStats.worktimes; let i = index">
+              <td class="py-4 px-6">{{ localeDateTime(worktime.start) }}</td>
+              <td class="py-4 px-6">{{ localeDateTime(worktime.end) }}</td>
+              <td class="py-4 px-6">{{worktime.seconds | hms}}</td>
+              <td class="py-4 px-6">
+                <button
+                  class="mr-0.5 px-4 py-1 text-sm font-semibold rounded-full border border-neutral-200 hover:text-white hover:bg-neutral-600 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-neutral-600 focus:ring-offset-2"
+                  (click)="workTimeStats.remove(i)"
+                >
+                  X
+                </button>
+                <button
+                  class="px-4 py-1 text-sm font-semibold rounded-full border border-neutral-200 hover:text-white hover:bg-neutral-600 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-neutral-600 focus:ring-offset-2"
+                  (click)="workTimeStats.removeOlder(i)">
+                  X this and older
+                </button>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
