@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {fromEvent, Subject, takeUntil, timer} from "rxjs";
 import {CountdownServiceInterface} from "../services/countdown.service.Interface";
 import {WorkCountdownService} from "../services/work-countdown.service";
-import {CountdownFactory} from "../services/switch-countdown.factory";
+import {SwitchCountdownService} from "../services/switch-countdown.service";
 import {SoundService} from "../services/sound.service";
 import { Title } from '@angular/platform-browser';
 import {HmsPipe} from "../pipes/hms.pipe";
@@ -12,12 +12,12 @@ import {WorkTimeStatService} from "../services/work-time-stat.service";
   selector: 'app-countdown',
   templateUrl: './countdown.component.html',
   styleUrls: ['./countdown.component.scss'],
-  providers: [CountdownFactory, SoundService, HmsPipe, WorkTimeStatService]
+  providers: [SwitchCountdownService, SoundService, HmsPipe, WorkTimeStatService]
 })
 export class CountdownComponent implements OnInit {
 
   constructor(
-    public countdownFactory: CountdownFactory,
+    public switchCountdownService: SwitchCountdownService,
     private titleService: Title,
     private hmsPipe: HmsPipe,
     public workTimeStats: WorkTimeStatService
@@ -27,8 +27,16 @@ export class CountdownComponent implements OnInit {
   private _unsubscribeAll: Subject<any> = new Subject();
 
   ngOnInit(): void {
-    this.countdownService.restore()
-    this.countdownFactory.restore()
+    const canRestore = this.countdownService.canRestore()
+
+    if (!canRestore.result) {
+      this.switchCountdown(false)
+      this.countdownService.seconds = canRestore.props.seconds
+    } else {
+      this.countdownService.restore()
+    }
+
+    this.switchCountdownService.restore()
 
     timer(0, 1000)
     .pipe(takeUntil(this._unsubscribeAll))
@@ -36,7 +44,7 @@ export class CountdownComponent implements OnInit {
       this.countdownService.progress();
 
       if (this.countdownService.finished())
-        this.switchCountdownFactory(true)
+        this.switchCountdown(true)
 
       this.titleService.setTitle(`${this.countdownService.title} ${this.hmsPipe.transform(this.countdownService.seconds)}`)
     });
@@ -53,7 +61,7 @@ export class CountdownComponent implements OnInit {
         }
 
         if (key === 'KeyF') {
-          this.switchCountdownFactory(false)
+          this.switchCountdown(false)
         }
       })
   }
@@ -68,8 +76,8 @@ export class CountdownComponent implements OnInit {
     this._unsubscribeAll.complete();
   }
 
-  switchCountdownFactory(playSound: boolean) {
-    this.countdownService = this.countdownFactory.switch(
+  switchCountdown(playSound: boolean) {
+    this.countdownService = this.switchCountdownService.switch(
       this.countdownService,
       playSound
     )

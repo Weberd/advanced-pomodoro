@@ -11,4 +11,6 @@ export interface CountdownServiceInterface {
   switchPause(): void;
   persist(): void;
   restore(): void;
+
+  canRestore(): { result: boolean; props: any };
 }

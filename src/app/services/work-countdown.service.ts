@@ -40,4 +40,9 @@ export class WorkCountdownService implements CountdownServiceInterface {
     this.seconds = Number(props.seconds || 0)
     this.paused = props.paused ?? true
   }
+
+  canRestore(): { result: boolean; props: any } {
+    const props = JSON.parse(localStorage.getItem(COUNTDOWN_LOCAL_STORAGE_KEY) || '{}')
+    return {result:props.title === this.title, props}
+  }
 }

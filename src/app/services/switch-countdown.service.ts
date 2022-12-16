@@ -6,11 +6,12 @@ import {Injectable} from "@angular/core";
 import {WorkTimeStatService} from "./work-time-stat.service";
 import {WorkTimeModel} from "../models/work-time.model";
 
-const COUNTDOWN_FACTORY_LOCAL_STORAGE_KEY = 'advanced-pomodoro-countdown-factory'
+const COUNTDOWN_FACTORY_LOCAL_STORAGE_KEY = 'advanced-pomodoro-countdown-service'
 
 @Injectable()
-export class CountdownFactory {
+export class SwitchCountdownService {
   private _delimiter = 4
+  private _countdownService: CountdownServiceInterface = new WorkCountdownService();
 
   constructor(
     private soundService: SoundService,
@@ -60,5 +61,9 @@ export class CountdownFactory {
   set delimiter(value: number) {
     this._delimiter = value;
     this.persist()
+  }
+
+  get countdownService(): CountdownServiceInterface {
+    return this._countdownService;
   }
 }
