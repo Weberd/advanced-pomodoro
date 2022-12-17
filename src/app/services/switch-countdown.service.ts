@@ -33,6 +33,7 @@ export class SwitchCountdownService {
 
       const newCountdown = new WorkCountdownService()
       newCountdown.seconds = 0
+      newCountdown.paused = true
       return newCountdown
     }
   }
