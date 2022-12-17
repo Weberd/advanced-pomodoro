@@ -1,48 +1,46 @@
-import {CountdownServiceInterface} from "./countdown.service.Interface";
-import {WorkCountdownService} from "./work-countdown.service";
+import {COUNTDOWN_PREFIX, CountdownServiceInterface, TITLE_KEY} from "./countdown.service.Interface";
+import {WORK_TITLE, WorkCountdownService} from "./work-countdown.service";
 import {RestCountdownService} from "./rest-countdown.service";
 import {SoundService} from "./sound.service";
 import {Injectable} from "@angular/core";
 import {WorkTimeStatService} from "./work-time-stat.service";
-import {WorkTimeModel} from "../models/work-time.model";
+import {WorkTime} from "../models/work.time";
+import {CountdownServiceFactory} from "./countdown-service.factory";
 
-const COUNTDOWN_FACTORY_LOCAL_STORAGE_KEY = 'advanced-pomodoro-countdown-service'
+const SWITCH_COUNTDOWN_PREFX = 'advanced_pomodoro_switch_countdown_';
+const DELIMITER_KEY = 'delimiter';
 
 @Injectable()
 export class SwitchCountdownService {
-  private _delimiter = 4
-  private _countdownService: CountdownServiceInterface = new WorkCountdownService();
-
   constructor(
     private soundService: SoundService,
-    private worktimeStats: WorkTimeStatService
+    private worktimeStats: WorkTimeStatService,
+    private countdownFactory: CountdownServiceFactory
   ) {}
 
-  persist() {
-    localStorage.setItem(COUNTDOWN_FACTORY_LOCAL_STORAGE_KEY, JSON.stringify(this))
-  }
-
-  restore() {
-    const props = JSON.parse(localStorage.getItem(COUNTDOWN_FACTORY_LOCAL_STORAGE_KEY) || '{}')
-    this.delimiter = Number(props._delimiter || 4)
+  restoreCountdownService(): CountdownServiceInterface {
+    const title = localStorage.getItem(COUNTDOWN_PREFIX + TITLE_KEY) || WORK_TITLE
+    return this.countdownFactory.create(title)
   }
 
   switch(countdown: CountdownServiceInterface, playSound: boolean): CountdownServiceInterface {
     if (countdown instanceof WorkCountdownService) {
       this.addWorktime(countdown)
-      return this.createRestCountdown(countdown, this._delimiter)
+      return this.createRestCountdown(countdown, this.delimiter)
     } else {
       if (playSound)
         this.soundService.playGet2Work()
 
-      return  new WorkCountdownService()
+      const newCountdown = new WorkCountdownService()
+      newCountdown.seconds = 0
+      return newCountdown
     }
   }
 
   public createRestCountdown(countdown: WorkCountdownService, delimiter: number) {
     const newCountdown = new RestCountdownService()
     newCountdown.seconds = Math.floor(countdown.seconds / delimiter)
-    newCountdown.unpause()
+    newCountdown.paused = false
     return newCountdown
   }
 
@@ -51,19 +49,14 @@ export class SwitchCountdownService {
     const end = new Date()
     start.setTime(start.valueOf() - countdown.seconds * 1000)
 
-    this.worktimeStats.unshift(new WorkTimeModel(start, end))
+    this.worktimeStats.unshift(new WorkTime(start, end))
   }
 
   get delimiter(): number {
-    return this._delimiter;
+    return <number><unknown>localStorage.getItem(SWITCH_COUNTDOWN_PREFX + DELIMITER_KEY) || 4
   }
 
   set delimiter(value: number) {
-    this._delimiter = value;
-    this.persist()
-  }
-
-  get countdownService(): CountdownServiceInterface {
-    return this._countdownService;
+    localStorage.setItem(SWITCH_COUNTDOWN_PREFX + DELIMITER_KEY, String(value))
   }
 }
