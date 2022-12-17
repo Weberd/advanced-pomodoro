@@ -1,18 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import {fromEvent, Subject, takeUntil, timer} from "rxjs";
-import {CountdownServiceInterface} from "../services/countdown.service.Interface";
 import {WorkCountdownService} from "../services/work-countdown.service";
 import {SwitchCountdownService} from "../services/switch-countdown.service";
 import {SoundService} from "../services/sound.service";
 import { Title } from '@angular/platform-browser';
 import {HmsPipe} from "../pipes/hms.pipe";
 import {WorkTimeStatService} from "../services/work-time-stat.service";
+import {CountdownServiceFactory} from "../services/countdown-service.factory";
 
 @Component({
   selector: 'app-countdown',
   templateUrl: './countdown.component.html',
   styleUrls: ['./countdown.component.scss'],
-  providers: [SwitchCountdownService, SoundService, HmsPipe, WorkTimeStatService]
+  providers: [SwitchCountdownService, SoundService, HmsPipe, WorkTimeStatService, CountdownServiceFactory]
 })
 export class CountdownComponent implements OnInit {
 
@@ -23,21 +23,10 @@ export class CountdownComponent implements OnInit {
     public workTimeStats: WorkTimeStatService
   ) { }
 
-  public countdownService: CountdownServiceInterface = new WorkCountdownService();
+  public countdownService = this.switchCountdownService.restoreCountdownService()
   private _unsubscribeAll: Subject<any> = new Subject();
 
   ngOnInit(): void {
-    const canRestore = this.countdownService.canRestore()
-
-    if (!canRestore.result) {
-      this.switchCountdown(false)
-      this.countdownService.seconds = canRestore.props.seconds
-    } else {
-      this.countdownService.restore()
-    }
-
-    this.switchCountdownService.restore()
-
     timer(0, 1000)
     .pipe(takeUntil(this._unsubscribeAll))
     .subscribe(() => {

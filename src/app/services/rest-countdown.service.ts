@@ -1,14 +1,21 @@
-import {COUNTDOWN_LOCAL_STORAGE_KEY, CountdownServiceInterface} from "./countdown.service.Interface";
+import {
+  COUNTDOWN_PREFIX,
+  CountdownServiceInterface,
+  PAUSED_KEY,
+  SECONDS_KEY,
+  TITLE_KEY
+} from "./countdown.service.Interface";
+
+export const REST_TITLE = 'Rest'
 
 export class RestCountdownService implements CountdownServiceInterface {
-  title = 'Rest';
-  seconds = 5 * 60;
-  paused = true;
+  constructor() {
+    this.title = REST_TITLE
+  }
 
   progress() {
     if (this.seconds > 0 && !this.paused) {
       this.seconds--
-      this.persist()
     }
   }
 
@@ -16,33 +23,31 @@ export class RestCountdownService implements CountdownServiceInterface {
     return this.seconds === 0;
   }
 
-  pause(): void {
-    this.paused = true
-    this.persist()
-  }
-
   switchPause(): void {
     this.paused = !this.paused
-    this.persist()
   }
 
-  unpause(): void {
-    this.paused = false
-    this.persist()
+  get paused(): boolean {
+    return JSON.parse(localStorage.getItem(COUNTDOWN_PREFIX + PAUSED_KEY) || 'true')
   }
 
-  persist() {
-    localStorage.setItem(COUNTDOWN_LOCAL_STORAGE_KEY, JSON.stringify(this))
+  set paused(paused: boolean) {
+    localStorage.setItem(COUNTDOWN_PREFIX + PAUSED_KEY, JSON.stringify(paused))
   }
 
-  restore() {
-    const props = JSON.parse(localStorage.getItem(COUNTDOWN_LOCAL_STORAGE_KEY) || '{}')
-    this.seconds = Number(props.seconds || 0)
-    this.paused = props.paused ?? true
+  get seconds(): number {
+    return JSON.parse(localStorage.getItem(COUNTDOWN_PREFIX + SECONDS_KEY) || '0')
   }
 
-  canRestore(): { result: boolean; props: any } {
-    const props = JSON.parse(localStorage.getItem(COUNTDOWN_LOCAL_STORAGE_KEY) || '{}')
-    return {result:props.title === this.title, props}
+  set seconds(seconds: number) {
+    localStorage.setItem(COUNTDOWN_PREFIX + SECONDS_KEY, JSON.stringify(seconds))
+  }
+
+  get title(): string {
+    return localStorage.getItem(COUNTDOWN_PREFIX + TITLE_KEY) || REST_TITLE
+  }
+
+  set title(title: string) {
+    localStorage.setItem(COUNTDOWN_PREFIX + TITLE_KEY, title)
   }
 }

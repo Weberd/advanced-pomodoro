@@ -1,40 +1,40 @@
 import {Injectable} from "@angular/core";
-import {WorkTimeModel} from "../models/work-time.model";
+import {WorkTime} from "../models/work.time";
 
 const WORKTIMES_LOCAL_STORAGE_KEY = 'advanced-pomodoro-worktimes';
 
 @Injectable()
 export class WorkTimeStatService {
-  private _worktimes: WorkTimeModel[] = [];
+  private _worktimes: WorkTime[] = [];
 
   get totalSeconds(): number {
     return this.worktimes.reduce((seconds, worktime) => seconds + worktime.seconds, 0)
   }
 
   get worktimes() {
-    this._worktimes = JSON.parse(localStorage.getItem(WORKTIMES_LOCAL_STORAGE_KEY) || '[]') || []
-    this._worktimes = this._worktimes.map(worktime => {
-      return new WorkTimeModel(new Date(worktime.start), new Date(worktime.end))
+    const worktimes = JSON.parse(localStorage.getItem(WORKTIMES_LOCAL_STORAGE_KEY) || '[]') || []
+    this._worktimes = worktimes.map((worktime: WorkTime) => {
+      return new WorkTime(new Date(worktime.start), new Date(worktime.end))
     })
     return this._worktimes
   }
 
-  private save() {
+  private persist() {
     localStorage.setItem(WORKTIMES_LOCAL_STORAGE_KEY, JSON.stringify(this._worktimes))
   }
 
-  unshift(value: WorkTimeModel) {
+  unshift(value: WorkTime) {
     this._worktimes.unshift(value)
-    this.save()
+    this.persist()
   }
 
   remove(index: number) {
     this._worktimes.splice(index, 1)
-    this.save()
+    this.persist()
   }
 
   removeOlder(index: number) {
     this._worktimes.splice(index)
-    this.save()
+    this.persist()
   }
 }
