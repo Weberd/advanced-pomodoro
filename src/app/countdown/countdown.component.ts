@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {fromEvent, Subject, takeUntil, timer} from "rxjs";
+import {fromEvent, Subject, takeUntil} from "rxjs";
 import {WorkCountdownService} from "../services/work-countdown.service";
 import {SwitchCountdownService} from "../services/switch-countdown.service";
 import {SoundService} from "../services/sound.service";
@@ -25,19 +25,9 @@ export class CountdownComponent implements OnInit {
 
   public countdownService = this.switchCountdownService.restoreCountdownService()
   private _unsubscribeAll: Subject<any> = new Subject();
+  private timerWorker = this.createWebWorkerTimer()
 
   ngOnInit(): void {
-    timer(0, 1000)
-    .pipe(takeUntil(this._unsubscribeAll))
-    .subscribe(() => {
-      this.countdownService.progress();
-
-      if (this.countdownService.finished())
-        this.switchCountdown(true)
-
-      this.titleService.setTitle(`${this.countdownService.title} ${this.hmsPipe.transform(this.countdownService.seconds)}`)
-    });
-
     fromEvent<KeyboardEvent>(document, 'keyup')
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((event: KeyboardEvent) => {
@@ -60,6 +50,7 @@ export class CountdownComponent implements OnInit {
   }
 
   ngOnDestroy(): void {
+    this.timerWorker.postMessage('stop')
     // Unsubscribe from all subscriptions
     this._unsubscribeAll.next('');
     this._unsubscribeAll.complete();
@@ -77,6 +68,27 @@ export class CountdownComponent implements OnInit {
       return 'bg-rose-200';
     } else {
       return 'bg-green-200';
+    }
+  }
+
+  createWebWorkerTimer(): Worker {
+    if (typeof Worker !== 'undefined') {
+      // Create a new
+      const worker = new Worker(new URL('../timer.worker', import.meta.url));
+      worker.onmessage = ({ data }) => {
+        this.countdownService.progress();
+
+        if (this.countdownService.finished())
+          this.switchCountdown(true)
+
+        this.titleService.setTitle(`${this.countdownService.title} ${this.hmsPipe.transform(this.countdownService.seconds)}`)
+      };
+      worker.postMessage('start');
+      return worker
+    } else {
+      throw new Error('workers are not supported')
+      // Web Workers are not supported in this environment.
+      // You should add a fallback so that your program still executes correctly.
     }
   }
 }
