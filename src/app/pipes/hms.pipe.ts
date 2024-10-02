@@ -10,14 +10,16 @@ export class HmsPipe implements PipeTransform {
       const hours = Math.floor(value / 3600);
       const minutes = Math.floor((value % 3600) / 60);
       const seconds = value % 60;
-      let result = `${minutes
-        .toString()
-        .padStart(1, '0')}:${seconds.toString().padStart(2, '0')}`;
-      if (!!hours) {
+      let result;
+
+      if (!!minutes) {
         result = `${hours.toString()}:${minutes
           .toString()
-          .padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+          .padStart(2, '0')}`;
+      } else {
+        result = `00:${seconds.toString().padStart(2, '0')}`;
       }
+
       return result;
     } else {
       return value;
