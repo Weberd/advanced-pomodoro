@@ -12,7 +12,7 @@ export class HmsPipe implements PipeTransform {
       const seconds = value % 60;
       let result;
 
-      if (!!minutes) {
+      if (!!minutes || !!hours) {
         result = `${hours.toString()}:${minutes
           .toString()
           .padStart(2, '0')}`;
