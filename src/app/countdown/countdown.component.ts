@@ -79,7 +79,7 @@ export class CountdownComponent implements OnInit, OnDestroy {
     if (typeof Worker !== 'undefined') {
       // Create a new
       const worker = new Worker(new URL('../timer.worker', import.meta.url));
-      worker.onmessage = ({ data }) => {
+      worker.onmessage = () => {
         this.countdownService.progress();
 
         if (this.countdownService.finished())
