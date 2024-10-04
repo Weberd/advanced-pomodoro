@@ -79,6 +79,7 @@ export class CountdownComponent implements OnInit, OnDestroy {
     if (typeof Worker !== 'undefined') {
       // Create a new
       const worker = new Worker(new URL('../timer.worker', import.meta.url));
+
       worker.onmessage = () => {
         this.countdownService.progress();
 
@@ -87,6 +88,7 @@ export class CountdownComponent implements OnInit, OnDestroy {
 
         this.titleService.setTitle(`${this.countdownService.title} ${this.hmsPipe.transform(this.countdownService.seconds)}`)
       };
+
       worker.postMessage('start');
       return worker
     } else {
