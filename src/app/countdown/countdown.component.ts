@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {fromEvent, Subject, takeUntil} from "rxjs";
 import {WorkCountdownService} from "../services/work-countdown.service";
 import {SwitchCountdownService} from "../services/switch-countdown.service";
@@ -14,7 +14,7 @@ import {CountdownServiceFactory} from "../services/countdown-service.factory";
   styleUrls: ['./countdown.component.scss'],
   providers: [SwitchCountdownService, SoundService, HmsPipe, WorkTimeStatService, CountdownServiceFactory]
 })
-export class CountdownComponent implements OnInit {
+export class CountdownComponent implements OnInit, OnDestroy {
 
   constructor(
     public switchCountdownService: SwitchCountdownService,
@@ -28,6 +28,10 @@ export class CountdownComponent implements OnInit {
   private timerWorker = this.createWebWorkerTimer()
 
   ngOnInit(): void {
+    this.initHotkeys();
+  }
+
+  private initHotkeys() {
     fromEvent<KeyboardEvent>(document, 'keyup')
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((event: KeyboardEvent) => {
