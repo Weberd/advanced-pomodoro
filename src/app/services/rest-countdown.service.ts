@@ -1,8 +1,7 @@
 import {
   COUNTDOWN_PREFIX,
-  CountdownServiceInterface,
-  PAUSED_KEY,
-  SECONDS_KEY,
+  CountdownServiceInterface, FINISH_KEY,
+  PAUSED_KEY, START_KEY,
   TITLE_KEY
 } from "./countdown.service.Interface";
 
@@ -14,13 +13,14 @@ export class RestCountdownService implements CountdownServiceInterface {
   }
 
   progress() {
-    if (this.seconds > 0 && !this.paused) {
-      this.seconds--
+    if (!this.paused) {
+      const currentTime = (new Date()).getTime()
+      localStorage.setItem(COUNTDOWN_PREFIX + START_KEY, JSON.stringify(currentTime))
     }
   }
 
   finished() {
-    return this.seconds === 0;
+    return this.seconds <= 0
   }
 
   switchPause(): void {
@@ -28,19 +28,34 @@ export class RestCountdownService implements CountdownServiceInterface {
   }
 
   get paused(): boolean {
-    return JSON.parse(localStorage.getItem(COUNTDOWN_PREFIX + PAUSED_KEY) || 'true')
+    return JSON.parse(localStorage.getItem(COUNTDOWN_PREFIX + PAUSED_KEY) || 'false')
   }
 
   set paused(paused: boolean) {
+    if (!paused) {
+      // in case a lot of time passed after you unpause to recalculate start time and date time
+      this.seconds = this.seconds
+    }
+
     localStorage.setItem(COUNTDOWN_PREFIX + PAUSED_KEY, JSON.stringify(paused))
   }
 
+  private getStartTimestamp() {
+    return JSON.parse(localStorage.getItem(COUNTDOWN_PREFIX + START_KEY) || 'false') || (new Date()).getTime()
+  }
+
+  private getFinishTimestamp() {
+    return JSON.parse(localStorage.getItem(COUNTDOWN_PREFIX + FINISH_KEY) || 'false') || (new Date()).getTime()
+  }
+
   get seconds(): number {
-    return JSON.parse(localStorage.getItem(COUNTDOWN_PREFIX + SECONDS_KEY) || '0')
+    return Math.floor((this.getFinishTimestamp() - this.getStartTimestamp()) / 1000)
   }
 
   set seconds(seconds: number) {
-    localStorage.setItem(COUNTDOWN_PREFIX + SECONDS_KEY, JSON.stringify(seconds))
+    const currentTime = (new Date()).getTime()
+    localStorage.setItem(COUNTDOWN_PREFIX + START_KEY, JSON.stringify(currentTime))
+    localStorage.setItem(COUNTDOWN_PREFIX + FINISH_KEY, JSON.stringify(currentTime + seconds * 1000))
   }
 
   get title(): string {

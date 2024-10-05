@@ -15,7 +15,7 @@ export class HmsPipe implements PipeTransform {
       if (!!minutes || !!hours) {
         result = `${hours.toString()}:${minutes
           .toString()
-          .padStart(2, '0')}`;
+          .padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
       } else {
         result = `00:${seconds.toString().padStart(2, '0')}`;
       }

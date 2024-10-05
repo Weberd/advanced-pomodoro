@@ -1,6 +1,7 @@
 export const COUNTDOWN_PREFIX = 'advanced_pomodoro_countdown_'
 export const TITLE_KEY = 'title'
-export const SECONDS_KEY = 'seconds'
+export const START_KEY = 'start'
+export const FINISH_KEY = 'finish'
 export const PAUSED_KEY = 'paused'
 
 export interface CountdownServiceInterface {

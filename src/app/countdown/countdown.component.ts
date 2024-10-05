@@ -17,13 +17,13 @@ import {CountdownServiceFactory} from "../services/countdown-service.factory";
 export class CountdownComponent implements OnInit, OnDestroy {
 
   constructor(
-    public switchCountdownService: SwitchCountdownService,
+    protected switchCountdownService: SwitchCountdownService,
     private titleService: Title,
     private hmsPipe: HmsPipe,
-    public workTimeStats: WorkTimeStatService
+    protected workTimeStats: WorkTimeStatService
   ) { }
 
-  public countdownService = this.switchCountdownService.restoreCountdownService()
+  protected countdownService = this.switchCountdownService.restoreCountdownService()
   private _unsubscribeAll: Subject<any> = new Subject();
   private timerWorker = this.createWebWorkerTimer()
 
@@ -60,14 +60,14 @@ export class CountdownComponent implements OnInit, OnDestroy {
     this._unsubscribeAll.complete();
   }
 
-  switchCountdown(playSound: boolean) {
+  protected switchCountdown(playSound: boolean) {
     this.countdownService = this.switchCountdownService.switch(
       this.countdownService,
       playSound
     )
   }
 
-  getBackgroundColor(): string {
+  protected getBackgroundColor(): string {
     if (this.countdownService instanceof WorkCountdownService) {
       return 'bg-rose-200';
     } else {
@@ -75,7 +75,7 @@ export class CountdownComponent implements OnInit, OnDestroy {
     }
   }
 
-  createWebWorkerTimer(): Worker {
+  protected createWebWorkerTimer(): Worker {
     if (typeof Worker !== 'undefined') {
       // Create a new
       const worker = new Worker(new URL('../timer.worker', import.meta.url));
