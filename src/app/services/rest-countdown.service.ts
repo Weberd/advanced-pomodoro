@@ -5,7 +5,7 @@ import {
   TITLE_KEY
 } from "./countdown.service.Interface";
 
-export const REST_TITLE = 'Rest'
+const REST_TITLE = 'Rest'
 
 export class RestCountdownService implements CountdownServiceInterface {
   constructor() {
