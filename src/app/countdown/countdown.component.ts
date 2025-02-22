@@ -7,12 +7,20 @@ import { Title } from '@angular/platform-browser';
 import {HmsPipe} from "../pipes/hms.pipe";
 import {WorkTimeStatService} from "../services/work-time-stat.service";
 import {CountdownServiceFactory} from "../services/countdown-service.factory";
+import { WorkerFactory } from '../services/worker.factory';
 
 @Component({
   selector: 'app-countdown',
   templateUrl: './countdown.component.html',
   styleUrls: ['./countdown.component.scss'],
-  providers: [SwitchCountdownService, SoundService, HmsPipe, WorkTimeStatService, CountdownServiceFactory]
+  providers: [
+    SwitchCountdownService,
+    SoundService,
+    HmsPipe,
+    WorkTimeStatService,
+    CountdownServiceFactory,
+    WorkerFactory
+  ]
 })
 export class CountdownComponent implements OnInit, OnDestroy {
 
@@ -20,12 +28,27 @@ export class CountdownComponent implements OnInit, OnDestroy {
     protected switchCountdownService: SwitchCountdownService,
     private titleService: Title,
     private hmsPipe: HmsPipe,
-    protected workTimeStats: WorkTimeStatService
+    private workerFactory: WorkerFactory,
+    protected workTimeStats: WorkTimeStatService,
   ) { }
 
   protected countdownService = this.switchCountdownService.restoreCountdownService()
   private _unsubscribeAll: Subject<any> = new Subject();
-  private timerWorker = this.createWebWorkerTimer()
+  private timerWorker = this.workerFactory.create(() => {
+    if (this.countdownService) {
+      this.countdownService.progress();
+
+      if (this.countdownService.finished()) {
+        this.switchCountdown(true)
+      }        
+    }
+
+    if (this.titleService) {
+      this.titleService.setTitle(
+        `${this.countdownService.title} ${this.hmsPipe.transform(this.countdownService.seconds)}`
+      )  
+    }
+  })
 
   ngOnInit(): void {
     this.initHotkeys();
@@ -68,33 +91,6 @@ export class CountdownComponent implements OnInit, OnDestroy {
   }
 
   protected getBackgroundColor(): string {
-    if (this.countdownService instanceof WorkCountdownService) {
-      return 'bg-rose-200';
-    } else {
-      return 'bg-green-200';
-    }
-  }
-
-  protected createWebWorkerTimer(): Worker {
-    if (typeof Worker !== 'undefined') {
-      // Create a new
-      const worker = new Worker(new URL('../timer.worker', import.meta.url));
-
-      worker.onmessage = () => {
-        this.countdownService.progress();
-
-        if (this.countdownService.finished())
-          this.switchCountdown(true)
-
-        this.titleService.setTitle(`${this.countdownService.title} ${this.hmsPipe.transform(this.countdownService.seconds)}`)
-      };
-
-      worker.postMessage('start');
-      return worker
-    } else {
-      throw new Error('workers are not supported')
-      // Web Workers are not supported in this environment.
-      // You should add a fallback so that your program still executes correctly.
-    }
+    return this.countdownService instanceof WorkCountdownService ? 'bg-rose-200' : 'bg-green-200'
   }
 }
