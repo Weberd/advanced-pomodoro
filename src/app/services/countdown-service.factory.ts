@@ -5,9 +5,6 @@ import {Injectable} from "@angular/core";
 @Injectable()
 export class CountdownServiceFactory {
   create(title: string) {
-    if (title === WORK_TITLE)
-      return new WorkCountdownService()
-    else
-      return new RestCountdownService()
+    return title === WORK_TITLE ? new WorkCountdownService() : new RestCountdownService()
   }
 }
