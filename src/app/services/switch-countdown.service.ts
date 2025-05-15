@@ -54,7 +54,7 @@ export class SwitchCountdownService {
   }
 
   get delimiter(): number {
-    return <number><unknown>localStorage.getItem(SWITCH_COUNTDOWN_PREFX + DELIMITER_KEY) || 4
+    return <number><unknown>localStorage.getItem(SWITCH_COUNTDOWN_PREFX + DELIMITER_KEY) || 5
   }
 
   set delimiter(value: number) {
