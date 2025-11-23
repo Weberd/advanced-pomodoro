@@ -40,13 +40,13 @@ export class CountdownComponent implements OnInit, OnDestroy {
 
       if (this.countdownService.finished()) {
         this.switchCountdown(true)
-      }        
+      }
     }
 
     if (this.titleService) {
       this.titleService.setTitle(
         `${this.countdownService.title} ${this.hmsPipe.transform(this.countdownService.seconds)}`
-      )  
+      )
     }
   })
 
@@ -73,7 +73,12 @@ export class CountdownComponent implements OnInit, OnDestroy {
   }
 
   localeDateTime(date: Date) {
-    return date.toLocaleTimeString()
+    const today = new Date();
+
+    if (date.getDate() === today.getDate() && date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear()) {
+      return date.toLocaleTimeString()
+    } else
+      return date.toLocaleDateString() + ' ' + date.toLocaleTimeString()
   }
 
   ngOnDestroy(): void {
