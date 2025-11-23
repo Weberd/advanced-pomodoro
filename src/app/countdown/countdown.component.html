@@ -22,12 +22,24 @@
                  class="mt-1 block px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm"
                  [(ngModel)]="switchCountdownService.delimiter" min="1" step="0.5" type="number"/>
         </div>
-        <div class="py-2 flex justify-center">
-          <ul class="flex flex-col md:flex-row justify-center items-center">
-            <li>4–6 pomodoros (2–3 hours of focused work) = light day</li>
-            <li>6–8 pomodoros (3–4 hours) = solid, sustainable productivity</li>
-            <li>8–12 pomodoros (4–6 hours) = intense, often used for deadlines</li>
-            <li>12+ pomodoros (6+ hours) = usually not sustainable long-term</li>
+        <div class="py-1">
+          <ul class="flex flex-col md:flex-row justify-center">
+            <li class="mx-4">
+              <p>2–3 hours</p>
+              <p>light day</p>
+            </li>
+            <li class="mx-4">
+              <p>3–4 hours</p>
+              <p>solid, sustainable productivity</p>
+            </li>
+            <li class="mx-4">
+              <p>4–6 hours</p>
+              <p>intense, often used for deadlines</p>
+            </li>
+            <li class="mx-4">
+              <p>6+ hours</p>
+              <p>usually not sustainable long-term</p>
+            </li>
           </ul>
         </div>
 
