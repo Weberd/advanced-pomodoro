@@ -34,7 +34,7 @@ export class WorkCountdownService implements CountdownServiceInterface {
 
   set paused(paused: boolean) {
     if (!paused) {
-      // in case a lot of time passed after you unpause to recalculate start time and date time
+      // in case a lot of time passed after you unpause to recalculate start time
       this.seconds = this.seconds
     }
 

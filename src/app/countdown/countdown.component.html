@@ -3,17 +3,17 @@
     <span >Advanced Pomodoro</span>
   </header>
 
-  <div class="py-2 md:py-4">
-    <div class="container px-2 mx-auto max-h-full">
-      <div class="min-h-screen shadow-lg bg-white text-center rounded px-4 py-4 max-w-5xl mx-auto">
-
-        <div>
-          <h1 class="text-6xl">{{countdownService.seconds | hms}}</h1>
+  <div class="py-4">
+    <div class="px-2 mx-auto max-w-full">
+      <div class="shadow-lg bg-white text-center rounded max-w-5xl mx-auto">
+        <div class="flex justify-center items-end">
+          <h1 class="text-6xl leading-none">{{ countdownService.seconds | hoursMinutes }}</h1>
+          <p class="text-3xl leading-none">{{ countdownService.seconds | seconds }}</p>
         </div>
 
         <div class="py-2">
-          <button tabindex="-1" class="px-4 py-2 mr-2 rounded text-white bg-red-500 hover:bg-red-700" (click)="countdownService.switchPause()">{{countdownService.paused ? 'Start' : 'Pause'}}</button>
-          <button tabindex="-1" class="px-4 py-2 rounded text-white bg-green-500 hover:bg-green-700" (click)="switchCountdown(false)">Finish</button>
+          <button tabindex="-1" class="px-4 py-2 mr-2 rounded text-white" [ngClass]="getStartButtonColor()" (click)="countdownService.switchPause()">{{getStartButtonLabel()}}</button>
+          <button tabindex="-1" class="px-4 py-2 rounded text-white bg-green-500 disabled:bg-green-300 disabled:cursor-not-allowed" [disabled]="workFinished()" (click)="switchCountdown(false)">Finish</button>
         </div>
 
         <div class="py-2 flex justify-center">
@@ -44,7 +44,7 @@
         </div>
 
         <div class="py-2">
-          <p>Total Work Time: {{workTimeStats.totalSeconds | hms}}</p>
+          <p>Total Work Time: {{workTimeStats.totalSeconds | hoursMinutes}}</p>
         </div>
 
         <div class="min-h-screen overflow-y-auto h-56">
@@ -61,7 +61,7 @@
             <tr class="border-b" *ngFor="let worktime of workTimeStats.worktimes; let i = index">
               <td class="py-4 px-6">{{ localeDateTime(worktime.start) }}</td>
               <td class="py-4 px-6">{{ localeDateTime(worktime.end) }}</td>
-              <td class="py-4 px-6">{{worktime.seconds | hms}}</td>
+              <td class="py-4 px-6">{{worktime.seconds | hoursMinutes}}</td>
               <td class="py-4 px-6">
                 <button tabindex="-1"
                   class="mr-1 mb-1 px-4 py-1 text-sm font-semibold border rounded-lg border-neutral-400 hover:text-white hover:bg-neutral-600 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-neutral-600 focus:ring-offset-2"

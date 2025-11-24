@@ -28,8 +28,9 @@ export class SwitchCountdownService {
       this.addWorktime(countdown)
       return this.createRestCountdown(countdown, this.delimiter)
     } else {
-      if (playSound)
+      if (playSound) {
         this.soundService.playGet2Work()
+      }
 
       const newCountdown = new WorkCountdownService()
       newCountdown.seconds = 0

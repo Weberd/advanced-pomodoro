@@ -4,7 +4,7 @@ import {WorkCountdownService} from "../services/work-countdown.service";
 import {SwitchCountdownService} from "../services/switch-countdown.service";
 import {SoundService} from "../services/sound.service";
 import { Title } from '@angular/platform-browser';
-import {HmsPipe} from "../pipes/hms.pipe";
+import {HoursMinutesPipe} from "../pipes/hoursMinutes.pipe";
 import {WorkTimeStatService} from "../services/work-time-stat.service";
 import {CountdownServiceFactory} from "../services/countdown-service.factory";
 import { WorkerFactory } from '../services/worker.factory';
@@ -16,7 +16,7 @@ import { WorkerFactory } from '../services/worker.factory';
   providers: [
     SwitchCountdownService,
     SoundService,
-    HmsPipe,
+    HoursMinutesPipe,
     WorkTimeStatService,
     CountdownServiceFactory,
     WorkerFactory
@@ -27,7 +27,7 @@ export class CountdownComponent implements OnInit, OnDestroy {
   constructor(
     protected switchCountdownService: SwitchCountdownService,
     private titleService: Title,
-    private hmsPipe: HmsPipe,
+    private hmsPipe: HoursMinutesPipe,
     private workerFactory: WorkerFactory,
     protected workTimeStats: WorkTimeStatService,
   ) { }
@@ -96,6 +96,22 @@ export class CountdownComponent implements OnInit, OnDestroy {
   }
 
   protected getBackgroundColor(): string {
+    if (this.countdownService.paused) {
+      return 'bg-blue-200'
+    }
+
     return this.countdownService instanceof WorkCountdownService ? 'bg-rose-200' : 'bg-green-200'
+  }
+
+  protected getStartButtonLabel(): string {
+    return this.countdownService.paused ? 'Resume' : 'Pause'
+  }
+
+  protected getStartButtonColor(): string {
+    return this.countdownService.paused ? 'bg-blue-500' : 'bg-red-500'
+  }
+
+  protected workFinished(): boolean {
+    return this.countdownService instanceof WorkCountdownService && this.countdownService.paused
   }
 }
