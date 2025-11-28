@@ -1,8 +1,9 @@
-import { Pipe, PipeTransform } from '@angular/core';
+import {Injectable, Pipe, PipeTransform} from '@angular/core';
 
 @Pipe({
   name: 'hoursMinutes'
 })
+@Injectable({ providedIn: 'root' })
 export class HoursMinutesPipe implements PipeTransform {
 
   transform(value: number): string {

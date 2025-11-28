@@ -4,9 +4,11 @@ import {
   PAUSED_KEY, START_KEY,
   TITLE_KEY
 } from "./contracts/countdown.service.Interface";
+import {Injectable} from "@angular/core";
 
 const REST_TITLE = 'Rest'
 
+@Injectable({ providedIn: 'root' })
 export class RestCountdownService implements CountdownServiceInterface {
   constructor() {
     this.title = REST_TITLE

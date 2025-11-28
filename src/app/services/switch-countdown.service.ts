@@ -10,7 +10,7 @@ import {CountdownServiceFactory} from "./countdown-service.factory";
 const SWITCH_COUNTDOWN_PREFX = 'advanced_pomodoro_switch_countdown_';
 const DELIMITER_KEY = 'delimiter';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class SwitchCountdownService {
   constructor(
     private soundService: SoundService,

@@ -1,30 +1,19 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {fromEvent, Subject, takeUntil, filter} from "rxjs";
+import {fromEvent, Subject, takeUntil, filter, Observable, of, interval} from "rxjs";
 import {WorkCountdownService} from "../services/work-countdown.service";
 import {SwitchCountdownService} from "../services/switch-countdown.service";
-import {SoundService} from "../services/sound.service";
 import { Title } from '@angular/platform-browser';
 import {HoursMinutesPipe} from "../pipes/hoursMinutes.pipe";
 import {WorkTimeStatService} from "../services/work-time-stat.service";
-import {CountdownServiceFactory} from "../services/countdown-service.factory";
-import { WorkerService } from '../services/worker.service';
 
 @Component({
   selector: 'app-countdown',
   templateUrl: './countdown.component.html',
   styleUrls: ['./countdown.component.scss'],
-  providers: [
-    SwitchCountdownService,
-    SoundService,
-    HoursMinutesPipe,
-    WorkTimeStatService,
-    CountdownServiceFactory,
-    WorkerService
-  ]
 })
 export class CountdownComponent implements OnInit, OnDestroy {
   protected countdownService = this.switchCountdownService.restoreCountdownService()
-  private destroy$ = new Subject();
+  private destroy$ = new Subject<void>();
 
   public editModal = {
     isOpen: false,
@@ -54,12 +43,13 @@ export class CountdownComponent implements OnInit, OnDestroy {
     private titleService: Title,
     private hmsPipe: HoursMinutesPipe,
     protected workTimeStats: WorkTimeStatService,
-    private workerService: WorkerService
   ) { }
 
   ngOnInit(): void {
-    this.workerService.create(() => this.onTick())
-    this.workerService.start()
+    interval(1000).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(() => this.onTick());
+
     this.initHotkeys()
   }
 
@@ -86,10 +76,8 @@ export class CountdownComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.workerService.destroy()
-
     // Unsubscribe from all subscriptions
-    this.destroy$.next('')
+    this.destroy$.next()
     this.destroy$.complete()
   }
 
@@ -100,20 +88,21 @@ export class CountdownComponent implements OnInit, OnDestroy {
     )
   }
 
-  protected getBackgroundColor(): string {
-    if (this.countdownService.paused) {
-      return 'bg-blue-200'
-    }
-
-    return this.countdownService instanceof WorkCountdownService ? 'bg-rose-200' : 'bg-green-200'
+  backgroundColor(): Observable<string> {
+    return of(this.countdownService.paused
+      ? 'bg-blue-200'
+      : this.countdownService instanceof WorkCountdownService
+        ? 'bg-rose-200'
+        : 'bg-green-200'
+    )
   }
 
-  protected getStartButtonLabel(): string {
-    return this.countdownService.paused ? 'Resume' : 'Pause'
+  get startButtonLabel(): string {
+    return this.countdownService.paused ? 'Resume' : 'Pause';
   }
 
-  protected getStartButtonColor(): string {
-    return this.countdownService.paused ? 'bg-blue-500' : 'bg-red-500'
+  get startButtonColor(): string {
+    return this.countdownService.paused ? 'bg-blue-500' : 'bg-red-500';
   }
 
   protected workFinished(): boolean {

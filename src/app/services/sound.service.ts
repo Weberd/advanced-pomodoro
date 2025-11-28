@@ -1,6 +1,6 @@
 import {Injectable} from "@angular/core";
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class SoundService {
   playAudio(filepath: string) {
     let audio = new Audio();

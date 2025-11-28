@@ -3,7 +3,7 @@ import {WorkTime} from "../models/work.time";
 
 const WORKTIMES_LOCAL_STORAGE_KEY = 'advanced-pomodoro-worktimes';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class WorkTimeStatService {
   private _worktimes: WorkTime[] = [];
 

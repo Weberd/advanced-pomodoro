@@ -5,9 +5,11 @@ import {
   START_KEY,
   TITLE_KEY
 } from "./contracts/countdown.service.Interface";
+import {Injectable} from "@angular/core";
 
 export const WORK_TITLE = 'Work'
 
+@Injectable({ providedIn: 'root' })
 export class WorkCountdownService implements CountdownServiceInterface {
   constructor() {
     this.title = WORK_TITLE
