@@ -4,7 +4,7 @@ import {
   PAUSED_KEY,
   START_KEY,
   TITLE_KEY
-} from "./countdown.service.Interface";
+} from "./contracts/countdown.service.Interface";
 
 export const WORK_TITLE = 'Work'
 
@@ -24,7 +24,7 @@ export class WorkCountdownService implements CountdownServiceInterface {
     return false
   }
 
-  switchPause(): void {
+  togglePause(): void {
     this.paused = !this.paused
   }
 

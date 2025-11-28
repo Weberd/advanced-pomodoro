@@ -12,7 +12,7 @@
         </div>
 
         <div class="py-2">
-          <button tabindex="-1" class="px-4 py-2 mr-2 rounded text-white" [class]="getStartButtonColor()" (click)="countdownService.switchPause()">{{getStartButtonLabel()}}</button>
+          <button tabindex="-1" class="px-4 py-2 mr-2 rounded text-white" [class]="getStartButtonColor()" (click)="countdownService.togglePause()">{{getStartButtonLabel()}}</button>
           <button tabindex="-1" class="px-4 py-2 rounded text-white bg-green-500 disabled:bg-green-300 disabled:cursor-not-allowed" [disabled]="workFinished()" (click)="switchCountdown(false)">Finish</button>
         </div>
 

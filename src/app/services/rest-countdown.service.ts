@@ -3,7 +3,7 @@ import {
   CountdownServiceInterface, FINISH_KEY,
   PAUSED_KEY, START_KEY,
   TITLE_KEY
-} from "./countdown.service.Interface";
+} from "./contracts/countdown.service.Interface";
 
 const REST_TITLE = 'Rest'
 
@@ -23,7 +23,7 @@ export class RestCountdownService implements CountdownServiceInterface {
     return this.seconds <= 0
   }
 
-  switchPause(): void {
+  togglePause(): void {
     this.paused = !this.paused
   }
 

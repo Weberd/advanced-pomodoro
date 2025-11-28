@@ -1,4 +1,4 @@
-import {COUNTDOWN_PREFIX, CountdownServiceInterface, TITLE_KEY} from "./countdown.service.Interface";
+import {COUNTDOWN_PREFIX, CountdownServiceInterface, TITLE_KEY} from "./contracts/countdown.service.Interface";
 import {WORK_TITLE, WorkCountdownService} from "./work-countdown.service";
 import {RestCountdownService} from "./rest-countdown.service";
 import {SoundService} from "./sound.service";

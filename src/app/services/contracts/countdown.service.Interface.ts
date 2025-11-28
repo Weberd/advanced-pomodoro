@@ -7,7 +7,7 @@ export const PAUSED_KEY = 'paused'
 export interface CountdownServiceInterface {
   progress(): void
   finished(): boolean
-  switchPause(): void
+  togglePause(): void
   get title(): string
   set title(title: string)
   get seconds(): number

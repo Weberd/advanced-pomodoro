@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {fromEvent, Subject, takeUntil} from "rxjs";
+import {fromEvent, Subject, takeUntil, filter} from "rxjs";
 import {WorkCountdownService} from "../services/work-countdown.service";
 import {SwitchCountdownService} from "../services/switch-countdown.service";
 import {SoundService} from "../services/sound.service";
@@ -7,7 +7,7 @@ import { Title } from '@angular/platform-browser';
 import {HoursMinutesPipe} from "../pipes/hoursMinutes.pipe";
 import {WorkTimeStatService} from "../services/work-time-stat.service";
 import {CountdownServiceFactory} from "../services/countdown-service.factory";
-import { WorkerFactory } from '../services/worker.factory';
+import { WorkerService } from '../services/worker.service';
 
 @Component({
   selector: 'app-countdown',
@@ -19,12 +19,12 @@ import { WorkerFactory } from '../services/worker.factory';
     HoursMinutesPipe,
     WorkTimeStatService,
     CountdownServiceFactory,
-    WorkerFactory
+    WorkerService
   ]
 })
 export class CountdownComponent implements OnInit, OnDestroy {
   protected countdownService = this.switchCountdownService.restoreCountdownService()
-  private _unsubscribeAll: Subject<any> = new Subject();
+  private destroy$ = new Subject();
 
   public editModal = {
     isOpen: false,
@@ -33,7 +33,7 @@ export class CountdownComponent implements OnInit, OnDestroy {
     currentValue: ''
   };
 
-  private timerWorker = this.workerFactory.create(() => {
+  private onTick() {
     if (this.countdownService) {
       this.countdownService.progress();
 
@@ -47,36 +47,33 @@ export class CountdownComponent implements OnInit, OnDestroy {
         `${this.countdownService.title} ${this.hmsPipe.transform(this.countdownService.seconds)}`
       )
     }
-  })
+  }
 
   constructor(
     protected switchCountdownService: SwitchCountdownService,
     private titleService: Title,
     private hmsPipe: HoursMinutesPipe,
-    private workerFactory: WorkerFactory,
     protected workTimeStats: WorkTimeStatService,
+    private workerService: WorkerService
   ) { }
 
   ngOnInit(): void {
-    this.initHotkeys();
+    this.workerService.create(() => this.onTick())
+    this.workerService.start()
+    this.initHotkeys()
   }
 
-  private initHotkeys() {
-    fromEvent<KeyboardEvent>(document, 'keyup')
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((event: KeyboardEvent) => {
-        event.preventDefault();
-        event.stopPropagation();
-        let key = event.code;
-
-        if (key === 'Space') {
-          this.countdownService.switchPause()
-        }
-
-        if (key === 'KeyF') {
-          this.switchCountdown(false)
-        }
-      })
+  private initHotkeys(): void {
+    fromEvent<KeyboardEvent>(document, 'keyup').pipe(
+      takeUntil(this.destroy$),
+      filter(event => !this.editModal.isOpen), // Don't trigger when modal open
+    ).subscribe(event => {
+      if (event.code === 'Space') {
+        this.countdownService.togglePause();
+      } else if (event.code === 'KeyF') {
+        this.switchCountdown(false)
+      }
+    });
   }
 
   localeDateTime(date: Date, dateAlways: boolean = false) {
@@ -89,10 +86,11 @@ export class CountdownComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.timerWorker.postMessage('stop')
+    this.workerService.destroy()
+
     // Unsubscribe from all subscriptions
-    this._unsubscribeAll.next('');
-    this._unsubscribeAll.complete();
+    this.destroy$.next('')
+    this.destroy$.complete()
   }
 
   protected switchCountdown(playSound: boolean) {
