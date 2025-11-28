@@ -1,4 +1,4 @@
-<div class="h-screen" [ngClass]="getBackgroundColor()">
+<div class="h-screen" [class]="getBackgroundColor()">
   <header class="bg-white drop-shadow-lg px-2 py-2 text-neutral-700">
     <span >Advanced Pomodoro</span>
   </header>
@@ -12,7 +12,7 @@
         </div>
 
         <div class="py-2">
-          <button tabindex="-1" class="px-4 py-2 mr-2 rounded text-white" [ngClass]="getStartButtonColor()" (click)="countdownService.switchPause()">{{getStartButtonLabel()}}</button>
+          <button tabindex="-1" class="px-4 py-2 mr-2 rounded text-white" [class]="getStartButtonColor()" (click)="countdownService.switchPause()">{{getStartButtonLabel()}}</button>
           <button tabindex="-1" class="px-4 py-2 rounded text-white bg-green-500 disabled:bg-green-300 disabled:cursor-not-allowed" [disabled]="workFinished()" (click)="switchCountdown(false)">Finish</button>
         </div>
 
@@ -59,8 +59,8 @@
             </thead>
             <tbody>
             <tr class="border-b" *ngFor="let worktime of workTimeStats.worktimes; let i = index">
-              <td class="py-4 px-6">{{ localeDateTime(worktime.start) }}</td>
-              <td class="py-4 px-6">{{ localeDateTime(worktime.end) }}</td>
+              <td class="py-4 px-6" (dblclick)="openEditModal(i, localeDateTime(worktime.start, true), 'start')">{{ localeDateTime(worktime.start) }}</td>
+              <td class="py-4 px-6" (dblclick)="openEditModal(i, localeDateTime(worktime.end, true), 'end')">{{ localeDateTime(worktime.end) }}</td>
               <td class="py-4 px-6">{{worktime.seconds | hoursMinutes}}</td>
               <td class="py-4 px-6">
                 <button tabindex="-1"
@@ -82,4 +82,11 @@
       </div>
     </div>
   </div>
+
+  <app-edit-time-modal
+    *ngIf="editModal.isOpen"
+    [text]="editModal.currentValue"
+    (save)="saveChanges($event)"
+    (close)="closeModal()"
+  ></app-edit-time-modal>
 </div>

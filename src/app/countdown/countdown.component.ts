@@ -23,17 +23,16 @@ import { WorkerFactory } from '../services/worker.factory';
   ]
 })
 export class CountdownComponent implements OnInit, OnDestroy {
-
-  constructor(
-    protected switchCountdownService: SwitchCountdownService,
-    private titleService: Title,
-    private hmsPipe: HoursMinutesPipe,
-    private workerFactory: WorkerFactory,
-    protected workTimeStats: WorkTimeStatService,
-  ) { }
-
   protected countdownService = this.switchCountdownService.restoreCountdownService()
   private _unsubscribeAll: Subject<any> = new Subject();
+
+  public editModal = {
+    isOpen: false,
+    selectedId: -1,
+    isStartEdit: false,
+    currentValue: ''
+  };
+
   private timerWorker = this.workerFactory.create(() => {
     if (this.countdownService) {
       this.countdownService.progress();
@@ -49,6 +48,14 @@ export class CountdownComponent implements OnInit, OnDestroy {
       )
     }
   })
+
+  constructor(
+    protected switchCountdownService: SwitchCountdownService,
+    private titleService: Title,
+    private hmsPipe: HoursMinutesPipe,
+    private workerFactory: WorkerFactory,
+    protected workTimeStats: WorkTimeStatService,
+  ) { }
 
   ngOnInit(): void {
     this.initHotkeys();
@@ -72,10 +79,10 @@ export class CountdownComponent implements OnInit, OnDestroy {
       })
   }
 
-  localeDateTime(date: Date) {
+  localeDateTime(date: Date, dateAlways: boolean = false) {
     const today = new Date();
 
-    if (date.getDate() === today.getDate() && date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear()) {
+    if (!dateAlways && date.getDate() === today.getDate() && date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear()) {
       return date.toLocaleTimeString()
     } else
       return date.toLocaleDateString() + ' ' + date.toLocaleTimeString()
@@ -113,5 +120,37 @@ export class CountdownComponent implements OnInit, OnDestroy {
 
   protected workFinished(): boolean {
     return this.countdownService instanceof WorkCountdownService && this.countdownService.paused
+  }
+
+  openEditModal(id: number, text: string, field: 'start' | 'end') {
+    this.editModal = {
+      isOpen: true,
+      selectedId: id,
+      isStartEdit: field === 'start',
+      currentValue: text
+    }
+  }
+
+  saveChanges(value: string) {
+    const date = new Date(value);
+    if (isNaN(date.getTime())) {
+      alert('Invalid date format!');
+      return;
+    }
+
+    if (this.editModal.selectedId >= 0) {
+      if (this.editModal.isStartEdit) {
+        this.workTimeStats.worktimes[this.editModal.selectedId].start = new Date(value);
+      } else {
+        this.workTimeStats.worktimes[this.editModal.selectedId].end = new Date(value);
+      }
+
+      this.workTimeStats.persist();
+    }
+    this.closeModal();
+  }
+
+  closeModal() {
+    this.editModal.isOpen = false;
   }
 }

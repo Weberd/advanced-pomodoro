@@ -19,7 +19,7 @@ export class WorkTimeStatService {
     return this._worktimes
   }
 
-  private persist() {
+  public persist() {
     localStorage.setItem(WORKTIMES_LOCAL_STORAGE_KEY, JSON.stringify(this._worktimes))
   }
 
