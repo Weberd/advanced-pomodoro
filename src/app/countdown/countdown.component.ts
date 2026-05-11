@@ -54,12 +54,16 @@ export class CountdownComponent implements OnInit, OnDestroy {
   }
 
   private initHotkeys(): void {
-    fromEvent<KeyboardEvent>(document, 'keyup').pipe(
+    fromEvent<KeyboardEvent>(document, 'keydown').pipe(
       takeUntil(this.destroy$),
       filter(event => !this.editModal.isOpen), // Don't trigger when modal open
     ).subscribe(event => {
       if (event.code === 'Space') {
-        this.countdownService.togglePause();
+        event.preventDefault();
+
+        if (!event.repeat) {
+          this.countdownService.togglePause();
+        }
       } else if (event.code === 'KeyF') {
         this.switchCountdown(false)
       }
