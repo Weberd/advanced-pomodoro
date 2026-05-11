@@ -1,11 +1,7 @@
-<div class="h-screen" [class]="backgroundColor() | async">
-  <header class="bg-white drop-shadow-lg px-2 py-2 text-neutral-700">
-    <span >Advanced Pomodoro</span>
-  </header>
-
-  <div class="py-4">
-    <div class="px-2 mx-auto max-w-full">
-      <div class="shadow-lg bg-white text-center rounded max-w-5xl mx-auto">
+<div class="h-screen overflow-hidden flex flex-col" [ngClass]="backgroundColor() | async">
+  <div class="py-4 flex-1 min-h-0">
+    <div class="px-2 mx-auto max-w-full h-full">
+      <div class="shadow-lg bg-white text-center rounded max-w-5xl mx-auto h-full flex flex-col overflow-hidden">
         <div class="flex justify-center items-end">
           <h1 class="text-6xl leading-none">{{ countdownService.seconds | hoursMinutes }}</h1>
           <p class="text-3xl leading-none">{{ countdownService.seconds | seconds }}</p>
@@ -58,7 +54,7 @@
           <p>Total Work Time: {{workTimeStats.totalSeconds | hoursMinutes}}</p>
         </div>
 
-        <div class="min-h-screen overflow-y-auto h-56">
+        <div class="flex-1 min-h-0 overflow-y-auto">
           <table class="w-full text-gray-500 dark:text-gray-400">
             <thead class="text-xs text-gray-700 bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
